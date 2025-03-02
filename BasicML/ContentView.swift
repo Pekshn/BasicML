@@ -7,54 +7,67 @@
 
 import SwiftUI
 import CoreML
+import PhotosUI
 
 struct ContentView: View {
     
-    let images = ["1", "2", "3", "4"]
-    @State private var currentIndex = 0
+    @State private var isCameraSelected = false
+    @State private var selectedPhotoItem: PhotosPickerItem? = nil
     @State private var predictions: [String: Double] = [:]
-    
-    let model = try! MobileNetV2(configuration: MLModelConfiguration())
+    @State private var uiImage: UIImage? = UIImage(named: "cat_118")!
+    let model = try! CatsVsDogsImagesClassifier(configuration: MLModelConfiguration())
     
     var body: some View {
         VStack {
-            Image(images[currentIndex])
-                .resizable()
-                .scaledToFit()
-                .frame(width: 300, height: 300)
+            
+            if let uiImage = uiImage {
+                Image(uiImage: uiImage)
+                    .resizable()
+                    .scaledToFit()
+                    .frame(width: 300, height: 300)
+            }
             
             HStack {
-                Button("Previous") {
-                    currentIndex -= 1
+                PhotosPicker(selection: $selectedPhotoItem, matching: .images) {
+                    Text("Select a Photo")
                 }
-                .buttonStyle(.bordered)
-                .disabled(currentIndex == 0)
                 
-                Button("Next") {
-                    currentIndex += 1
+                Button("Camera") {
+                    isCameraSelected = true
                 }
                 .buttonStyle(.bordered)
-                .disabled(currentIndex == images.count - 1)
             }
             
             Button("Predict") {
-                guard let uiImage = UIImage(named: images[currentIndex]) else { return }
-                let resizedImage = uiImage.resize(to: CGSize(width: 224, height: 224))
-                
-                guard let buffer = resizedImage.toCVPixelBuffer() else { return }
+                guard let resizedImg = uiImage?.resize(to: CGSize(width: 299, height: 299)) else { return }
+                guard let buffer = resizedImg.toCVPixelBuffer() else { return }
                 do {
                     let prediction = try model.prediction(image: buffer)
-                    self.predictions = prediction.classLabelProbs
+                    predictions = prediction.targetProbability
                 } catch {
                     print(error.localizedDescription)
                 }
-                
             }
             .buttonStyle(.borderedProminent)
             
             //Predictions
             PredictionsListView(predictions: $predictions)
         }
+        .onChange(of: selectedPhotoItem, initial: false, {
+            selectedPhotoItem?.loadTransferable(type: Data.self, completionHandler: { result in
+                switch result {
+                case .success(let data):
+                    if let data = data, let image = UIImage(data: data) {
+                        uiImage = image
+                    }
+                case .failure(let error):
+                    print(error.localizedDescription)
+                }
+            })
+        })
+        .fullScreenCover(isPresented: $isCameraSelected, content: {
+            ImagePicker(image: $uiImage, sourceType: .camera)
+        })
         .padding()
     }
 }
