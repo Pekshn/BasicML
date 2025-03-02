@@ -14,9 +14,9 @@ CatsVsDogsImagesClassifier.mlmodel is created with this steps:
 3. Download dataset from link:
    https://www.kaggle.com/datasets/samuelcortinhas/cats-and-dogs-image-classification
 4. Add train folder to Train section, and test folder to Test section on CreateML
-5. Crate and get MLModel.
+5. Create and Get MLModel.
 
-📸 Screenshot
+📸 Screenshots
 
 <table>
   <tr>
