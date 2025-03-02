@@ -3,6 +3,7 @@
 Machine Learning iOS app that recognizes Cats Vs Dogs on images.
 
 - ML Image Recognition with CoreML
+- Creating MLModel with CreateML App
 
 📌 Notes:
 
