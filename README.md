@@ -20,6 +20,6 @@ CatsVsDogsImagesClassifier.mlmodel is created with this steps:
 
 <table>
   <tr>
-    <td><img src="Screenshots/SS1.png" width="300"></td>
+    <td><img src="Screenshots/SS.png" width="300"></td>
   </tr>
 </table>
