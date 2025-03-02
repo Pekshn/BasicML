@@ -1,5 +1,4 @@
 # BasicML
-Basic machine learning app
 
 An iOS ML application that recognizes Cats Vs Dogs on images.
 
